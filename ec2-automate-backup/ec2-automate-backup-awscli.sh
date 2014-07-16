@@ -213,7 +213,7 @@ if [[ -n $purge_after_input ]]; then
   fi
   purge_after_date_fe=$(get_purge_after_date_fe)
   purge_after_date_fe=$(date -d @${purge_after_date_fe} -u -R)
-  echo "Snapshots taken by $app_name will be eligible for purging after the following date (the purge after date given in seconds from epoch): $purge_after_date_fe."
+  echo "Snapshots taken by $app_name will be eligible for purging after the following date: $purge_after_date_fe."
 fi
 
 #get_EBS_List gets a list of EBS instances for which a snapshot is desired. The list of EBS instances depends upon the selection_method that is provided by user input
