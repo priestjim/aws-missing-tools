@@ -167,7 +167,8 @@ purge_snapshots=false
 while getopts :l:s:c:r:v:t:k:pnhu opt
 	do
 		case $opt in
-			l) label="$OPTARG";;
+      l) label="$OPTARG";;
+			d) description="$OPTARG";;
 			s) selection_method="$OPTARG";;
 			c) cron_primer="$OPTARG";;
 			r) region="$OPTARG";;
@@ -222,7 +223,11 @@ get_EBS_List
 
 #the loop below is called once for each volume in $ebs_backup_list - the currently selected EBS volume is passed in as "ebs_selected"
 for ebs_selected in $ebs_backup_list; do
-  ec2_snapshot_description="ec2ab_${ebs_selected}_$current_date"
+  if [[ -n $description ]]; then
+    ec2_snapshot_description="${description}"
+  else
+    ec2_snapshot_description="ec2ab_${ebs_selected}_$current_date"
+  fi;
   ec2_create_snapshot_result=$(aws ec2 create-snapshot --region $region --description $ec2_snapshot_description --volume-id $ebs_selected --output text 2>&1)
   if [[ $? != 0 ]]; then
     echo -e "An error occured when running ec2-create-snapshot. The error returned is below:\n$ec2_create_snapshot_result" 1>&2 ; exit 70
