@@ -43,7 +43,7 @@ get_EBS_List() {
   esac
   #creates a list of all ebs volumes that match the selection string from above
   ebs_backup_list=$(aws ec2 describe-volumes --region $region $ebs_selection_string --output text --query 'Volumes[*].VolumeId')
-  #takes the output of the previous command 
+  #takes the output of the previous command
   ebs_backup_list_result=$(echo $?)
   if [[ $ebs_backup_list_result -gt 0 ]]; then
     echo -e "An error occured when running ec2-describe-volumes. The error returned is below:\n$ebs_backup_list_complete" 1>&2 ; exit 70
@@ -68,6 +68,10 @@ create_EBS_Snapshot_Tags() {
   #if $user_tags is true, then append Volume=$ebs_selected and Created=$current_date to the variable $snapshot_tags
   if $user_tags; then
     snapshot_tags="$snapshot_tags Key=Volume,Value=${ebs_selected} Key=Created,Value=$current_date"
+  fi
+  #if the user has selected tag-based snapshots, embed the original tags to the snapshots
+  if [[ -n $tag ]]; then
+    snapshot_tags="$snapshot_tags Key=OrigVolumeTag,Value=${tag}"
   fi
   #if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
   if [[ -n $snapshot_tags ]]; then
@@ -110,8 +114,12 @@ esac
 purge_EBS_Snapshots() {
   # snapshot_purge_allowed is a string containing the SnapshotIDs of snapshots
   # that contain a tag with the key value/pair PurgeAllow=true
-  snapshot_purge_allowed=$(aws ec2 describe-snapshots --region $region --filters Name=tag:PurgeAllow,Values=true --output text --query 'Snapshots[*].SnapshotId')
-  
+  snapshot_selection_tags='Name=tag:PurgeAllow,Values=true'
+  if [[ -n $tag ]]; then
+    snapshot_selection_tags="${snapshot_selection_tags} Name=tag:OrigVolumeTag,Values=${tag}"
+  fi;
+  snapshot_purge_allowed=$(aws ec2 describe-snapshots --region $region --filters $snapshot_selection_tags --output text --query 'Snapshots[*].SnapshotId')
+
   for snapshot_id_evaluated in $snapshot_purge_allowed; do
     #gets the "PurgeAfterFE" date which is in UTC with UNIX Time format (or xxxxxxxxxx / %s)
     purge_after_fe=$(aws ec2 describe-snapshots --region $region --snapshot-ids $snapshot_id_evaluated --output text | grep ^TAGS.*PurgeAfterFE | cut -f 3)
@@ -208,7 +216,7 @@ for ebs_selected in $ebs_backup_list; do
     echo -e "An error occured when running ec2-create-snapshot. The error returned is below:\n$ec2_create_snapshot_result" 1>&2 ; exit 70
   else
     ec2_snapshot_resource_id=$(echo "$ec2_create_snapshot_result" | cut -f 5)
-  fi  
+  fi
   create_EBS_Snapshot_Tags
 done
 
