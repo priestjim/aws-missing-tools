@@ -164,7 +164,7 @@ user_tags=false
 purge_snapshots=false
 #handles options processing
 
-while getopts :l:s:c:r:v:t:k:pnhu opt
+while getopts :l:d:s:c:r:v:t:k:pnhu opt
 	do
 		case $opt in
       l) label="$OPTARG";;
