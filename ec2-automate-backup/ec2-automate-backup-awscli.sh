@@ -83,10 +83,11 @@ create_EBS_Snapshot_Tags()
 		snapshot_tags="$snapshot_tags Key=Volume,Value=${ebs_selected} Key=Created,Value=$current_date"
 	fi
 	#if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
-	if [[ -n $snapshot_tags ]]
-		then echo "Tagging Snapshot $ec2_snapshot_resource_id with the following Tags: $snapshot_tags"
+	if [[ -n $snapshot_tags ]]; then
+    echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following Tags: $snapshot_tags:"
 		tags_arugment="--tags $snapshot_tags"
 		aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region $tags_arugment --output text 2>&1`
+    echo ${aws_ec2_create_tag_result}
 	fi
 }
 
@@ -211,6 +212,7 @@ if [[ -n $purge_after_input ]]; then
     get_date_binary
   fi
   purge_after_date_fe=$(get_purge_after_date_fe)
+  purge_after_date_fe=$(date -d @${purge_after_fe} -u -R)
   echo "Snapshots taken by $app_name will be eligible for purging after the following date (the purge after date given in seconds from epoch): $purge_after_date_fe."
 fi
 
