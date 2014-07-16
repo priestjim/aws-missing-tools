@@ -84,9 +84,8 @@ create_EBS_Snapshot_Tags()
 	fi
 	#if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
 	if [[ -n $snapshot_tags ]]; then
-    echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following Tags: $snapshot_tags:"
-		tags_arugment="--tags $snapshot_tags"
-		aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region $tags_arugment --output text 2>&1`
+    echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following tags: $snapshot_tags: "
+		aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region --tags "${snapshot_tags}" --output text 2>&1`
     echo ${aws_ec2_create_tag_result}
 	fi
 }
