@@ -38,7 +38,11 @@ get_EBS_List() {
       if [[ -z $tag ]]; then
         echo "The selected selection_method \"tag\" (-s tag) requires a valid tag (-t Backup,Values=true) for operation. Correct usage is as follows: \"-s tag -t Backup,Values=true.\"" 1>&2 ; exit 64
       fi
-      ebs_selection_string="--filters Name=tag:$tag"
+      ebs_selection_filter=""
+      for tag_el in ${tag}; do
+        ebs_selection_filter="${ebs_selection_filter} Name=tag:$tag_el"
+      done
+      ebs_selection_string="--filters ${ebs_selection_filter}"
       ;;
     *) echo "If you specify a selection_method (-s selection_method) for selecting EBS volumes you must select either \"volumeid\" (-s volumeid) or \"tag\" (-s tag)." 1>&2 ; exit 64 ;;
   esac
@@ -79,10 +83,6 @@ create_EBS_Snapshot_Tags()
 		then
 		snapshot_tags="$snapshot_tags Key=Volume,Value=${ebs_selected} Key=Created,Value=$current_date"
 	fi
-  #if the user has selected tag-based snapshots, embed the original tags to the snapshots
-  if [[ -n $tag ]]; then
-    snapshot_tags="$snapshot_tags Key=OrigVolumeTag,Value=${tag}"
-  fi
 	#if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
 	if [[ -n $snapshot_tags ]]
 		then echo "Tagging Snapshot $ec2_snapshot_resource_id with the following Tags: $snapshot_tags"
