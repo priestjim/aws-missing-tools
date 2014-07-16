@@ -125,9 +125,6 @@ purge_EBS_Snapshots() {
   # snapshot_purge_allowed is a string containing the SnapshotIDs of snapshots
   # that contain a tag with the key value/pair PurgeAllow=true
   snapshot_selection_tags='Name=tag:PurgeAllow,Values=true'
-  if [[ -n $tag ]]; then
-    snapshot_selection_tags="${snapshot_selection_tags} Name=tag:OrigVolumeTag,Values=${tag}"
-  fi;
   snapshot_purge_allowed=$(aws ec2 describe-snapshots --region $region --filters $snapshot_selection_tags --output text --query 'Snapshots[*].SnapshotId')
 
   for snapshot_id_evaluated in $snapshot_purge_allowed; do
