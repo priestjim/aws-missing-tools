@@ -61,7 +61,7 @@ create_EBS_Snapshot_Tags()
 	snapshot_tags=""
   #if $hostname_tag_create is true then append --tag InitiatingHost=`hostname -f` to the variable $snapshot_tags
   if $hostname_tag_create; then
-    snapshot_tags="Key=InitiatingHost,Value=`hostname -f`"
+    snapshot_tags="Key=Hostname,Value=`hostname -f`"
   fi
   #if $purge_after_date_fe is true, then append $purge_after_date_fe to the variable $snapshot_tags
   if [[ -n $purge_after_date_fe ]]; then
