@@ -72,7 +72,7 @@ create_EBS_Snapshot_Tags()
   # If the user has defined his own label for the snapshots, enforce that
   if [[ -n $label ]]
     then
-    snapshot_tags="$snapshot_tags Key=Name,Value=$label"
+    snapshot_tags="$snapshot_tags Key=Name,Value='$label'"
   elif $name_tag_create
     then
   	#if $name_tag_create is true then append ec2ab_${ebs_selected}_$current_date to the variable $snapshot_tags
