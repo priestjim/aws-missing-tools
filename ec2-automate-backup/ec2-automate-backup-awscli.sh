@@ -70,8 +70,7 @@ create_EBS_Snapshot_Tags()
     snapshot_tags="$snapshot_tags Key=PurgeAfterFE,Value=$purge_after_date_fe Key=PurgeAllow,Value=true"
   fi
   # If the user has defined his own label for the snapshots, enforce that
-  if [[ -n $label ]]
-    then
+  if [[ -n $label ]]; then
     snapshot_tags="$snapshot_tags Key=Name,Value='$label'"
   elif $name_tag_create
     then
