@@ -212,7 +212,7 @@ if [[ -n $purge_after_input ]]; then
     get_date_binary
   fi
   purge_after_date_fe=$(get_purge_after_date_fe)
-  purge_after_date_fe=$(date -d @${purge_after_fe} -u -R)
+  purge_after_date_fe=$(date -d @${purge_after_date_fe} -u -R)
   echo "Snapshots taken by $app_name will be eligible for purging after the following date (the purge after date given in seconds from epoch): $purge_after_date_fe."
 fi
 
