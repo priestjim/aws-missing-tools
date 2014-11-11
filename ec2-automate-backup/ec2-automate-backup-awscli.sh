@@ -222,7 +222,7 @@ for ebs_selected in $ebs_backup_list; do
   else
     ec2_snapshot_description="ec2ab_${ebs_selected}_$current_date"
   fi;
-  ec2_create_snapshot_result=$(aws ec2 create-snapshot --region $region --description "$ec2_snapshot_description" --volume-id $ebs_selected --output text 2>&1)
+  ec2_create_snapshot_result=$(aws ec2 create-snapshot --region $region --description "$ec2_snapshot_description" --volume-id $ebs_selected --output text --query SnapshotId 2>&1)
   if [[ $? != 0 ]]; then
     echo -e "An error occured when running ec2-create-snapshot. The error returned is below:\n$ec2_create_snapshot_result" 1>&2 ; exit 70
   else
