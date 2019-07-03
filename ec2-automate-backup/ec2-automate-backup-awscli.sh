@@ -228,6 +228,8 @@ for ebs_selected in $ebs_backup_list; do
   else
     ec2_snapshot_resource_id=$(echo "$ec2_create_snapshot_result" | cut -f 5)
   fi
+  echo "Waiting for the snapshots to initialize"
+  sleep 10
   create_EBS_Snapshot_Tags
 done
 
