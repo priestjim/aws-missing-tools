@@ -82,7 +82,6 @@ create_EBS_Snapshot_Tags()
   if [[ -n $snapshot_tags ]]; then
     echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following tags: $snapshot_tags: "
     tag_arguments="--tags ${snapshot_tags}"
-    echo "Tag command is: aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1"
     aws_ec2_create_tag_result=$(aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1)
     echo ${aws_ec2_create_tag_result}
   fi
