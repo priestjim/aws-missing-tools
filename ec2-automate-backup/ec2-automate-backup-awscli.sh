@@ -217,8 +217,8 @@ fi
 get_EBS_List
 
 #the loop below is called once for each volume in $ebs_backup_list - the currently selected EBS volume is passed in as "ebs_selected"
-ebs_selected_arr = array()
-ec2_snapshot_resource_id_arr = array()
+ebs_selected_arr=()
+ec2_snapshot_resource_id_arr=()
 
 for ebs_selected in $ebs_backup_list; do
   if [[ -n $description ]]; then
