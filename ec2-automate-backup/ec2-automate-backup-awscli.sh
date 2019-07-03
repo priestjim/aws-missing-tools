@@ -57,8 +57,8 @@ get_EBS_List() {
 
 create_EBS_Snapshot_Tags()
 {
-	#snapshot tags holds all tags that need to be applied to a given snapshot - by aggregating tags we ensure that ec2-create-tags is called only onece
-	snapshot_tags=""
+  #snapshot tags holds all tags that need to be applied to a given snapshot - by aggregating tags we ensure that ec2-create-tags is called only onece
+  snapshot_tags=""
   #if $hostname_tag_create is true then append --tag InitiatingHost=`hostname -f` to the variable $snapshot_tags
   if $hostname_tag_create; then
     snapshot_tags="Key=Hostname,Value=`hostname -f`"
@@ -71,20 +71,20 @@ create_EBS_Snapshot_Tags()
   if [[ -n $label ]]; then
     snapshot_tags="$snapshot_tags Key=Name,Value=$label"
   elif $name_tag_create; then
-  	#if $name_tag_create is true then append ec2ab_${ebs_selected}_$current_date to the variable $snapshot_tags
-		snapshot_tags="$snapshot_tags Key=Name,Value=ec2ab_${ebs_selected}_$current_date"
+    #if $name_tag_create is true then append ec2ab_${ebs_selected}_$current_date to the variable $snapshot_tags
+    snapshot_tags="$snapshot_tags Key=Name,Value=ec2ab_${ebs_selected}_$current_date"
   fi
-	#if $user_tags is true, then append Volume=$ebs_selected and Created=$current_date to the variable $snapshot_tags
-	if $user_tags; then
-		snapshot_tags="$snapshot_tags Key=Volume,Value=${ebs_selected} Key=Created,Value=$current_date"
-	fi
-	#if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
-	if [[ -n $snapshot_tags ]]; then
+  #if $user_tags is true, then append Volume=$ebs_selected and Created=$current_date to the variable $snapshot_tags
+  if $user_tags; then
+    snapshot_tags="$snapshot_tags Key=Volume,Value=${ebs_selected} Key=Created,Value=$current_date"
+  fi
+  #if $snapshot_tags is not zero length then set the tag on the snapshot using aws ec2 create-tags
+  if [[ -n $snapshot_tags ]]; then
     echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following tags: $snapshot_tags: "
     tag_arguments="--tags ${snapshot_tags}"
-		aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1`
+    aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1`
     echo ${aws_ec2_create_tag_result}
-	fi
+  fi
 }
 
 get_date_binary() {
@@ -158,23 +158,23 @@ purge_snapshots=false
 #handles options processing
 
 while getopts :l:d:s:c:r:v:t:k:pnhu opt
-	do
-		case $opt in
+  do
+    case $opt in
       l) label="$OPTARG";;
-			d) description="$OPTARG";;
-			s) selection_method="$OPTARG";;
-			c) cron_primer="$OPTARG";;
-			r) region="$OPTARG";;
-			v) volumeid="$OPTARG";;
-			t) tag="$OPTARG";;
-			k) purge_after_input="$OPTARG";;
-			n) name_tag_create=true;;
-			h) hostname_tag_create=true;;
-			p) purge_snapshots=true;;
-			u) user_tags=true;;
-			*) echo "Error with Options Input (option -${opt}). Cause of failure is most likely that an unsupported parameter was passed or a parameter was passed without a corresponding option." 1>&2 ; exit 64;;
-		esac
-	done
+      d) description="$OPTARG";;
+      s) selection_method="$OPTARG";;
+      c) cron_primer="$OPTARG";;
+      r) region="$OPTARG";;
+      v) volumeid="$OPTARG";;
+      t) tag="$OPTARG";;
+      k) purge_after_input="$OPTARG";;
+      n) name_tag_create=true;;
+      h) hostname_tag_create=true;;
+      p) purge_snapshots=true;;
+      u) user_tags=true;;
+      *) echo "Error with Options Input (option -${opt}). Cause of failure is most likely that an unsupported parameter was passed or a parameter was passed without a corresponding option." 1>&2 ; exit 64;;
+    esac
+  done
 
 #sources "cron_primer" file for running under cron or other restricted environments - this file should contain the variables and environment configuration required for ec2-automate-backup to run correctly
 if [[ -n $cron_primer ]]; then
