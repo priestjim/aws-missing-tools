@@ -85,6 +85,7 @@ create_EBS_Snapshot_Tags()
     aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1`
     echo ${aws_ec2_create_tag_result}
   fi
+}
 
 get_date_binary() {
   #$(uname -o) (operating system) would be ideal, but OS X / Darwin does not support to -o option
