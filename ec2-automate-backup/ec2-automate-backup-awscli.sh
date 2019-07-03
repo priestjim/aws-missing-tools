@@ -72,7 +72,7 @@ create_EBS_Snapshot_Tags()
     snapshot_tags="$snapshot_tags Key=Name,Value=$label"
   elif $name_tag_create; then
     #if $name_tag_create is true then append ec2ab_${ebs_selected}_$current_date to the variable $snapshot_tags
-    snapshot_tags="$snapshot_tags Key=Name,Value=ec2ab_${ebs_selected}_$current_date"
+    snapshot_tags="$snapshot_tags Key=Name,Value=${ebs_selected}_$current_date"
   fi
   #if $user_tags is true, then append Volume=$ebs_selected and Created=$current_date to the variable $snapshot_tags
   if $user_tags; then
@@ -82,7 +82,8 @@ create_EBS_Snapshot_Tags()
   if [[ -n $snapshot_tags ]]; then
     echo -n "Tagging Snapshot $ec2_snapshot_resource_id with the following tags: $snapshot_tags: "
     tag_arguments="--tags ${snapshot_tags}"
-    aws_ec2_create_tag_result=`aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1`
+    echo "Tag command is: aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1"
+    aws_ec2_create_tag_result=$(aws ec2 create-tags --resources $ec2_snapshot_resource_id --region $region ${tag_arguments} --output text 2>&1)
     echo ${aws_ec2_create_tag_result}
   fi
 }
@@ -216,6 +217,9 @@ fi
 get_EBS_List
 
 #the loop below is called once for each volume in $ebs_backup_list - the currently selected EBS volume is passed in as "ebs_selected"
+ebs_selected_arr = array()
+ec2_snapshot_resource_id_arr = array()
+
 for ebs_selected in $ebs_backup_list; do
   if [[ -n $description ]]; then
     ec2_snapshot_description="${description}"
@@ -228,8 +232,15 @@ for ebs_selected in $ebs_backup_list; do
   else
     ec2_snapshot_resource_id=$(echo "$ec2_create_snapshot_result" | cut -f 5)
   fi
-  echo "Waiting for the snapshots to initialize"
-  sleep 30
+  ebs_selected_arr+=( $ebs_selected )
+  ec2_snapshot_resource_id_arr+=( $ec2_snapshot_resource_id )
+done
+
+echo "Waiting for the snapshots to initialize"
+sleep 90
+for index in ${!ebs_selected_arr[*]}; do
+  ebs_selected=${ebs_selected_arr[$index]}
+  ec2_snapshot_resource_id=${ec2_snapshot_resource_id_arr[$index]}
   create_EBS_Snapshot_Tags
 done
 
