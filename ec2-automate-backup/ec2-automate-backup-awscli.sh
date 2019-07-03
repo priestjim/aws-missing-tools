@@ -237,7 +237,7 @@ for ebs_selected in $ebs_backup_list; do
 done
 
 echo "Waiting for the snapshots to initialize"
-sleep 90
+sleep 30
 for index in ${!ebs_selected_arr[*]}; do
   ebs_selected=${ebs_selected_arr[$index]}
   ec2_snapshot_resource_id=${ec2_snapshot_resource_id_arr[$index]}
